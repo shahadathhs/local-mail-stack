@@ -53,46 +53,6 @@ export type RefreshToken = Prisma.RefreshTokenModel
  */
 export type FileInstance = Prisma.FileInstanceModel
 /**
- * Model VideoMergeJob
- * 
- */
-export type VideoMergeJob = Prisma.VideoMergeJobModel
-/**
- * Model Notification
- * 
- */
-export type Notification = Prisma.NotificationModel
-/**
- * Model UserNotification
- * 
- */
-export type UserNotification = Prisma.UserNotificationModel
-/**
- * Model PrivateCall
- * 
- */
-export type PrivateCall = Prisma.PrivateCallModel
-/**
- * Model PrivateCallParticipant
- * 
- */
-export type PrivateCallParticipant = Prisma.PrivateCallParticipantModel
-/**
- * Model PrivateConversation
- * 
- */
-export type PrivateConversation = Prisma.PrivateConversationModel
-/**
- * Model PrivateMessage
- * 
- */
-export type PrivateMessage = Prisma.PrivateMessageModel
-/**
- * Model PrivateMessageStatus
- * 
- */
-export type PrivateMessageStatus = Prisma.PrivateMessageStatusModel
-/**
  * Model User
  * 
  */

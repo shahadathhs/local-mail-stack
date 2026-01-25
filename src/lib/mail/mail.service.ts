@@ -11,10 +11,15 @@ export class MailService {
   constructor(private configService: ConfigService) {
     const user = this.configService.getOrThrow<string>(ENVEnum.MAIL_USER);
     const pass = this.configService.getOrThrow<string>(ENVEnum.MAIL_PASS);
+    const host =
+      this.configService.get<string>(ENVEnum.MAIL_HOST) ?? '127.0.0.1';
+    const port = this.configService.get<string>(ENVEnum.MAIL_PORT) ?? '1025';
 
     this.fromEmail = user;
     this.transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host,
+      port: parseInt(port, 10),
+      secure: false, // Local servers usually don't need TLS initially
       auth: { user, pass },
     });
   }

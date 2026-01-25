@@ -1,7 +1,7 @@
 import { successResponse } from '@/common/utils/response.util';
 import { AppError } from '@/core/error/handle-error.app';
 import { HandleError } from '@/core/error/handle-error.decorator';
-import { S3Service } from '@/lib/file/services/s3.service';
+import { FileService } from '@/lib/file/services/file.service';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
 import { Injectable } from '@nestjs/common';
@@ -13,7 +13,7 @@ export class AuthUpdateProfileService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly authUtils: AuthUtilsService,
-    private readonly s3: S3Service,
+    private readonly fileService: FileService,
   ) {}
 
   @HandleError('Failed to update profile', 'User')
@@ -33,7 +33,7 @@ export class AuthUpdateProfileService {
     // * if image is provided, upload to S3 and update user
     let fileInstance: FileInstance | undefined;
     if (file) {
-      const uploadFile = await this.s3.uploadFile(file);
+      const uploadFile = await this.fileService.processUploadedFile(file);
 
       if (uploadFile) {
         fileInstance = uploadFile;

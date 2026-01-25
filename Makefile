@@ -1,6 +1,6 @@
 # Variables
-DOCKER_USERNAME=softvence
-PACKAGE_NAME=nestjs_starter
+DOCKER_USERNAME=shahadathhs
+PACKAGE_NAME=local_mail_stack
 PACKAGE_VERSION=latest
 
 # Docker image name
