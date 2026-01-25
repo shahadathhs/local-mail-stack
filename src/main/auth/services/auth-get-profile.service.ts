@@ -40,6 +40,7 @@ export class AuthGetProfileService {
     const data = {
       ...sanitizedUser,
       profilePicture,
+      devMailboxUrl: this.authUtils.createSignedMailboxUrl(user.email),
     };
 
     return successResponse(data, 'User data fetched successfully');

@@ -1,11 +1,13 @@
 import { GetUser, ValidateAuth } from '@/core/jwt/jwt.decorator';
 import { MulterService } from '@/lib/file/services/multer.service';
+import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
 import {
   Body,
   Controller,
   Get,
   Patch,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileType } from '@prisma';
+import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { LogoutDto, RefreshTokenDto } from './dto/logout.dto';
 import { ResendOtpDto, VerifyOTPDto } from './dto/otp.dto';
@@ -46,6 +49,7 @@ export class AuthController {
     private readonly authPasswordService: AuthPasswordService,
     private readonly authGetProfileService: AuthGetProfileService,
     private readonly authUpdateProfileService: AuthUpdateProfileService,
+    private readonly authUtils: AuthUtilsService,
   ) {}
 
   @ApiOperation({ summary: 'User Registration with Email' })
@@ -114,6 +118,15 @@ export class AuthController {
   @ValidateAuth()
   async getProfile(@GetUser('sub') userId: string) {
     return this.authGetProfileService.getProfile(userId);
+  }
+
+  @ApiOperation({ summary: 'Open Dev Mailbox (Redirect)' })
+  @ApiBearerAuth()
+  @Get('mailbox/open')
+  @ValidateAuth()
+  async openMailbox(@GetUser('email') email: string, @Res() res: Response) {
+    const url = this.authUtils.createSignedMailboxUrl(email);
+    return res.redirect(url);
   }
 
   @ApiOperation({ summary: 'Update profile' })

@@ -2,12 +2,12 @@ import { ENVEnum } from '@/common/enum/env.enum';
 import { QueueEventsEnum } from '@/common/enum/queue-events.enum';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
-export class SuperAdminService implements OnModuleInit {
+export class SuperAdminService implements OnApplicationBootstrap {
   private readonly logger = new Logger(SuperAdminService.name);
 
   constructor(
@@ -17,7 +17,7 @@ export class SuperAdminService implements OnModuleInit {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  onModuleInit(): Promise<void> {
+  onApplicationBootstrap(): Promise<void> {
     return this.seedSuperAdminUser();
   }
 
