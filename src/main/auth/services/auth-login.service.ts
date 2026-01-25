@@ -1,3 +1,4 @@
+import { ENVEnum } from '@/common/enum/env.enum';
 import { successResponse, TResponse } from '@/common/utils/response.util';
 import { AppError } from '@/core/error/handle-error.app';
 import { HandleError } from '@/core/error/handle-error.decorator';
@@ -5,6 +6,7 @@ import { AuthMailService } from '@/lib/mail/services/auth-mail.service';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { LoginDto } from '../dto/login.dto';
 
 @Injectable()
@@ -13,6 +15,7 @@ export class AuthLoginService {
     private readonly prisma: PrismaService,
     private readonly authMailService: AuthMailService,
     private readonly utils: AuthUtilsService,
+    private readonly configService: ConfigService,
   ) {}
 
   @HandleError('Login failed', 'User')
@@ -37,8 +40,11 @@ export class AuthLoginService {
         otp.toString(),
       );
 
+      const baseUrl = this.configService.get(ENVEnum.BASE_URL);
+      const devMailboxUrl = `${baseUrl}/dev/mailbox/${user.email}`;
+
       return successResponse(
-        { email: user.email },
+        { email: user.email, devMailboxUrl },
         'Your email is not verified. A new OTP has been sent to your email.',
       );
     }

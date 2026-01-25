@@ -114,7 +114,12 @@ export class SmtpService implements OnApplicationBootstrap {
                 },
               },
             });
+
             this.logger.log(`Email saved to INBOX for user ${user.email}`);
+            // Development Only: Log the body to see OTP easily
+            this.logger.debug(
+              `[DEBUG] Email Content for ${user.email}:\n${parsed.text}`,
+            );
           }
         }
       }

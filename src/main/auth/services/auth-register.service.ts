@@ -1,3 +1,4 @@
+import { ENVEnum } from '@/common/enum/env.enum';
 import { QueueEventsEnum } from '@/common/enum/queue-events.enum';
 import { successResponse, TResponse } from '@/common/utils/response.util';
 import { AppError } from '@/core/error/handle-error.app';
@@ -6,6 +7,7 @@ import { AuthMailService } from '@/lib/mail/services/auth-mail.service';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RegisterDto } from '../dto/register.dto';
 
@@ -16,6 +18,7 @@ export class AuthRegisterService {
     private readonly authMailService: AuthMailService,
     private readonly utils: AuthUtilsService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly configService: ConfigService,
   ) {}
 
   @HandleError('Registration failed', 'User')
@@ -60,9 +63,13 @@ export class AuthRegisterService {
     );
 
     // Return sanitized response
+    const baseUrl = this.configService.get(ENVEnum.BASE_URL);
+    const devMailboxUrl = `${baseUrl}/dev/mailbox/${newUser.email}`;
+
     return successResponse(
       {
         email: newUser.email,
+        devMailboxUrl,
       },
       `Registration successful. A verification email has been sent to ${newUser.email}.`,
     );
