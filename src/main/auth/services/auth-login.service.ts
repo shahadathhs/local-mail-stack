@@ -1,4 +1,3 @@
-import { ENVEnum } from '@/common/enum/env.enum';
 import { successResponse, TResponse } from '@/common/utils/response.util';
 import { AppError } from '@/core/error/handle-error.app';
 import { HandleError } from '@/core/error/handle-error.decorator';
@@ -40,8 +39,9 @@ export class AuthLoginService {
         otp.toString(),
       );
 
-      const baseUrl = this.configService.get(ENVEnum.BASE_URL);
-      const devMailboxUrl = `${baseUrl}/dev/mailbox/${user.email}`;
+      // const baseUrl = this.configService.get(ENVEnum.BASE_URL);
+      // const devMailboxUrl = `${baseUrl}/dev/mailbox/${user.email}`;
+      const devMailboxUrl = this.utils.createSignedMailboxUrl(user.email);
 
       return successResponse(
         { email: user.email, devMailboxUrl },

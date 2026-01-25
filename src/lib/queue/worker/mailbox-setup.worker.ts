@@ -36,19 +36,39 @@ export class MailboxSetupWorker extends WorkerHost {
         MailboxType.ARCHIVE,
       ];
 
-      // Create default mailboxes
+      // 1. Get existing mailboxes
+      const existingMailboxes = await this.prisma.client.mailbox.findMany({
+        where: { userId },
+        select: { type: true },
+      });
+
+      const existingTypes = new Set(existingMailboxes.map((m) => m.type));
+
+      // 2. Filter out what we already have
+      const missingTypes = mailboxTypes.filter(
+        (type) => !existingTypes.has(type),
+      );
+
+      if (missingTypes.length === 0) {
+        this.logger.log(`All mailboxes already exist for ${email}`);
+        return;
+      }
+
+      // 3. Create missing mailboxes
       await this.prisma.client.mailbox.createMany({
-        data: mailboxTypes.map((type) => ({
+        data: missingTypes.map((type) => ({
           userId,
           name: this.getMailboxName(type),
           type,
           uidNext: 1,
-          uidValidity: Math.floor(Date.now() / 1000), // Standard UNIX timestamp validity
+          uidValidity: Math.floor(Date.now() / 1000),
         })),
-        skipDuplicates: true, // Idempotency
+        skipDuplicates: true, // Safety net
       });
 
-      this.logger.log(`Mailboxes created successfully for ${email}`);
+      this.logger.log(
+        `Created ${missingTypes.length} missing mailboxes for ${email}`,
+      );
     } catch (err) {
       this.logger.error(
         `Failed to setup mailboxes for ${email}: ${(err as Error).message}`,

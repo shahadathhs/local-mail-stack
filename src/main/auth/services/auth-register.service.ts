@@ -1,4 +1,3 @@
-import { ENVEnum } from '@/common/enum/env.enum';
 import { QueueEventsEnum } from '@/common/enum/queue-events.enum';
 import { successResponse, TResponse } from '@/common/utils/response.util';
 import { AppError } from '@/core/error/handle-error.app';
@@ -63,8 +62,9 @@ export class AuthRegisterService {
     );
 
     // Return sanitized response
-    const baseUrl = this.configService.get(ENVEnum.BASE_URL);
-    const devMailboxUrl = `${baseUrl}/dev/mailbox/${newUser.email}`;
+    // const baseUrl = this.configService.get(ENVEnum.BASE_URL);
+    // const devMailboxUrl = `${baseUrl}/dev/mailbox/${newUser.email}`;
+    const devMailboxUrl = this.utils.createSignedMailboxUrl(newUser.email);
 
     return successResponse(
       {

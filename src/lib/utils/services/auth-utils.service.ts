@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { FileInstance, OtpType, User } from '@prisma';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
-import { randomBytes, randomInt } from 'crypto';
+import { createHmac, randomBytes, randomInt } from 'crypto';
 
 @Injectable()
 export class AuthUtilsService {
@@ -150,5 +150,25 @@ export class AuthUtilsService {
 
   async compare(value: string, hash: string): Promise<boolean> {
     return bcrypt.compare(value, hash);
+  }
+
+  createSignedMailboxUrl(email: string): string {
+    const baseUrl = this.configService.getOrThrow(ENVEnum.BASE_URL);
+    const secret = this.configService.getOrThrow(ENVEnum.JWT_SECRET);
+
+    // Create HMAC SHA256 signature
+    const sig = createHmac('sha256', secret).update(email).digest('hex');
+
+    return `${baseUrl}/dev/mailbox/${email}?sig=${sig}`;
+  }
+
+  verifyMailboxUrlSignature(email: string, sig: string): boolean {
+    const secret = this.configService.getOrThrow(ENVEnum.JWT_SECRET);
+
+    const expectedSig = createHmac('sha256', secret)
+      .update(email)
+      .digest('hex');
+
+    return sig === expectedSig;
   }
 }

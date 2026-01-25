@@ -1,106 +1,157 @@
-<html>
-  <head>
-    <meta charset='utf-8' />
-    <title>Local Mail Stack - Dev Mailbox</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Mail Stack - {{email}}</title>
     <style>
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-          Arial, sans-serif;
-        padding: 2rem;
-        background: #f9f9f9;
-      }
-      .container {
-        max-width: 960px;
-        margin: 0 auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
-      h1 {
-        margin-bottom: 5px;
-        color: #333;
-      }
-      .subtitle {
-        color: #666;
-        margin-bottom: 2rem;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-      }
-      th {
-        background: #f4f4f4;
-        color: #555;
-        font-weight: 600;
-      }
-      tr:hover {
-        background: #fafafa;
-      }
-      .otp {
-        font-family: monospace;
-        background: #eef2ff;
-        color: #4338ca;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-weight: bold;
-      }
-      .empty {
-        text-align: center;
-        color: #999;
-        padding: 2rem;
-      }
-      .badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        background: #dbeafe;
-        color: #1e40af;
-      }
-    </style>
-  </head>
-  <body>
-    <div class='container'>
-      <h1>📬 Dev Mailbox</h1>
-      <div class='subtitle'>Viewing Inbox for: <strong>{{email}}</strong></div>
+        :root {
+            --primary-bg: #f6f8fc;
+            --sidebar-bg: #f0f4fc;
+            --active-folder-bg: #d3e3fd;
+            --active-folder-color: #001d35;
+            --border-color: #e7ebf0;
+            --text-color: #444746;
+            --read-bg: #f2f6fc;
+            --unread-bg: #ffffff;
+            --accent-color: #0b57d0;
+        }
+        body { margin: 0; font-family: "Google Sans", Roboto, Arial, sans-serif; height: 100vh; display: flex; flex-direction: column; background: var(--primary-bg); color: var(--text-color); overflow: hidden; }
+        
+        /* Header */
+        header { padding: 12px 24px; background: white; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+        header .logo { font-size: 20px; color: var(--text-color); display: flex; align-items: center; gap: 12px; }
+        header .user-info { font-size: 14px; color: #666; background: #eef2ff; padding: 4px 12px; border-radius: 16px; }
 
-      {{#if messages.length}}
-        <table>
-          <thead>
-            <tr>
-              <th>From</th>
-              <th>Subject</th>
-              <th>Received</th>
-              <th>Content Preview</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each messages}}
-              <tr>
-                <td>{{this.from}}</td>
-                <td>{{this.subject}}</td>
-                <td>{{this.date}}</td>
-                <td>
-                  <div
-                    style='max-height: 100px; overflow-y: auto; white-space: pre-wrap; font-size: 14px; color: #444;'
-                  >{{this.text}}</div>
-                </td>
-              </tr>
+        /* Main Layout */
+        .layout { display: flex; flex: 1; height: 100%; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 240px; background: var(--sidebar-bg); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; border-right: 1px solid var(--border-color); }
+        .folder-link { display: flex; align-items: center; padding: 0 16px; height: 40px; border-radius: 20px; text-decoration: none; color: var(--text-color); font-size: 14px; font-weight: 500; justify-content: space-between; transition: background 0.2s; }
+        .folder-link:hover { background: rgba(0,0,0,0.05); }
+        .folder-link.active { background: var(--active-folder-bg); color: var(--active-folder-color); font-weight: 700; }
+        .badge { background: var(--accent-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+
+        /* Email List */
+        .email-list { width: 350px; background: white; overflow-y: auto; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .email-item { padding: 12px 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.15s; }
+        .email-item:hover { background: #f5f5f5; box-shadow: 0 1px 2px rgba(0,0,0,0.1); z-index: 1; }
+        .email-item.active { background: #e8f0fe; border-left: 4px solid var(--accent-color); padding-left: 12px; }
+        .email-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .sender { font-weight: 600; font-size: 14px; color: #202124; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+        .date { font-size: 11px; color: #5f6368; }
+        .subject { font-size: 13px; color: #202124; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .preview { font-size: 12px; color: #5f6368; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Reading Pane */
+        .reading-pane { flex: 1; background: white; padding: 24px 32px; overflow-y: auto; display: none; }
+        .reading-pane.open { display: block; }
+        .email-meta { border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px; }
+        .email-meta h2 { margin: 0 0 12px 0; font-size: 22px; font-weight: 400; color: #202124; }
+        .meta-row { display: flex; justify-content: space-between; font-size: 13px; color: #5f6368; }
+        .meta-row strong { color: #202124; }
+        .email-body { font-size: 14px; line-height: 1.6; color: #202124; }
+        
+        .empty-state { flex: 1; display: flex; align-items: center; justify-content: center; color: #999; flex-direction: column; gap: 16px; }
+        .empty-icon { font-size: 48px; opacity: 0.3; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bdc1c6; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span style="font-size: 24px;">📬</span>
+            <span>Dev Mailbox</span>
+        </div>
+        <div class="user-info">{{email}}</div>
+    </header>
+
+    <div class="layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            {{#each mailboxes}}
+            <a href="{{this.url}}" class="folder-link {{#if this.active}}active{{/if}}">
+                <span style="text-transform: capitalize;">{{this.name}}</span>
+                {{#if this.count}}<span class="badge">{{this.count}}</span>{{/if}}
+            </a>
             {{/each}}
-          </tbody>
-        </table>
-      {{else}}
-        <div class='empty'>No messages found in INBOX for this user.</div>
-      {{/if}}
+            <div style="flex: 1"></div>
+            <a href="{{devMailboxUrl}}" class="folder-link" style="color: #666; font-size: 12px;">Reset View</a>
+        </nav>
+
+        <!-- Email List -->
+        <div class="email-list">
+            {{#if messages.length}}
+                {{#each messages}}
+                <div class="email-item" onclick="openEmail('email-{{this.id}}', this)">
+                    <div class="email-header">
+                        <span class="sender" title="{{this.from}}">{{this.from}}</span>
+                        <span class="date">{{this.date}}</span>
+                    </div>
+                    <div class="subject">{{this.subject}}</div>
+                    <div class="preview">{{this.text}}</div>
+                </div>
+                {{/each}}
+            {{else}}
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div>No emails in {{currentFolder}}</div>
+                </div>
+            {{/if}}
+        </div>
+
+        <!-- Reading Pane -->
+        <div class="reading-pane" id="reading-pane">
+            <div class="empty-state">
+                <div class="empty-icon">📨</div>
+                <div>Select an email to read</div>
+            </div>
+        </div>
+
+        <!-- Hidden Email Content Storage -->
+        <div id="email-store" style="display: none;">
+            {{#each messages}}
+            <div id="email-{{this.id}}">
+                <div class="email-meta">
+                    <h2>{{this.subject}}</h2>
+                    <div class="meta-row">
+                        <div>
+                            From: <strong>{{this.from}}</strong><br>
+                            To: {{this.to}}
+                        </div>
+                        <div>{{this.date}}</div>
+                    </div>
+                </div>
+                <div class="email-body">
+                    {{#if this.html}}
+                        {{{this.html}}}
+                    {{else}}
+                        <pre style="font-family: inherit; margin: 0; white-space: pre-wrap;">{{this.text}}</pre>
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
     </div>
-  </body>
+
+    <script>
+        function openEmail(id, element) {
+            // Highlight active item
+            document.querySelectorAll('.email-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            // Show content
+            const content = document.getElementById(id).innerHTML;
+            const pane = document.getElementById('reading-pane');
+            pane.innerHTML = content;
+            pane.classList.add('open');
+        }
+    </script>
+</body>
 </html>
