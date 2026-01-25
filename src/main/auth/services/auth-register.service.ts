@@ -1,3 +1,4 @@
+import { QueueEventsEnum } from '@/common/enum/queue-events.enum';
 import { successResponse, TResponse } from '@/common/utils/response.util';
 import { AppError } from '@/core/error/handle-error.app';
 import { HandleError } from '@/core/error/handle-error.decorator';
@@ -5,6 +6,7 @@ import { AuthMailService } from '@/lib/mail/services/auth-mail.service';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RegisterDto } from '../dto/register.dto';
 
 @Injectable()
@@ -13,6 +15,7 @@ export class AuthRegisterService {
     private readonly prisma: PrismaService,
     private readonly authMailService: AuthMailService,
     private readonly utils: AuthUtilsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   @HandleError('Registration failed', 'User')
@@ -34,6 +37,12 @@ export class AuthRegisterService {
         name,
         password: await this.utils.hash(password),
       },
+    });
+
+    // Trigger background mailbox setup via event
+    this.eventEmitter.emit(QueueEventsEnum.MAILBOX_SETUP, {
+      userId: newUser.id,
+      email: newUser.email,
     });
 
     // Generate OTP and save

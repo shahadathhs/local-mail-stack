@@ -142,7 +142,9 @@ erDiagram
 
 - Email persistence
 - Mailbox management
-- User accounts
+- Email persistence
+- Mailbox management
+- User accounts ([View Auth Flow](./docs/auth-flow.md))
 
 ## 🚀 Advanced Features
 

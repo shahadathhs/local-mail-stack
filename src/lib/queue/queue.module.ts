@@ -1,23 +1,18 @@
 import { QueueName } from '@/common/enum/queue-name.enum';
 import { BullModule } from '@nestjs/bullmq';
 import { Global, Module } from '@nestjs/common';
-import { GenericEventsService } from './events/generic-events.service';
-import { GenericTriggerService } from './trigger/generic-trigger.service';
-import { GenericWorkerService } from './worker/generic-worker.service';
+import { MailboxEventsService } from './events/mailbox-events.service';
+import { MailboxSetupWorker } from './worker/mailbox-setup.worker';
 
 @Global()
 @Module({
   imports: [
     BullModule.registerQueue(
       { name: QueueName.NOTIFICATION },
-      { name: QueueName.GENERIC },
+      { name: QueueName.MAILBOX },
     ),
   ],
-  providers: [
-    GenericTriggerService,
-    GenericEventsService,
-    GenericWorkerService,
-  ],
-  exports: [BullModule],
+  providers: [MailboxSetupWorker, MailboxEventsService],
+  exports: [MailboxSetupWorker, MailboxEventsService],
 })
 export class QueueModule {}
