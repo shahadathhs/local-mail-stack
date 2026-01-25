@@ -1,6 +1,6 @@
 # Local Mail Stack
 
-📧 **Local Mail Server (SMTP + IMAP) for Development & Testing**
+📧 **Local Mail Server for Development & Testing**
 
 ## One-liner
 
@@ -10,66 +10,100 @@ A fully local email system that supports sending, receiving, storing, and readin
 
 Developers usually rely on:
 
-- **Gmail** (slow, unsafe for testing)
-- **Third-party tools** (Mailtrap, Ethereal)
+- **Gmail**
+- **Third-party tools**
 
 This project:
 
 - Runs 100% locally
 - Uses real protocols
-- Gives full control + visibility
-- Great for backend email testing (password reset, notifications, etc.)
+- **Gives full control + visibility** over internal mail flow
+- **Perfect for testing transactional emails**
 
 ## 🧱 Core Stack
 
-| Layer             | Tech                |
-| :---------------- | :------------------ |
-| **SMTP Server**   | `smtp-server`       |
-| **Email Sending** | `nodemailer`        |
-| **Email Parsing** | `mailparser`        |
-| **IMAP Server**   | `ImapFlow`          |
-| **Backend API**   | Node.js / NestJS    |
-| **Storage**       | SQLite / PostgreSQL |
-| **UI (optional)** | React / Next.js     |
-| **Deployment**    | Docker              |
+| Layer             | Tech          |
+| :---------------- | :------------ |
+| **SMTP Server**   | `smtp-server` |
+| **Email Sending** | `nodemailer`  |
+| **Email Parsing** | `mailparser`  |
+| **IMAP Server**   | `ImapFlow`    |
+| **Backend API**   | NestJS        |
+| **Storage**       | PostgreSQL    |
+| **Deployment**    | Docker        |
 
 ## 🧩 High-Level Architecture
 
 ```text
 ┌────────────┐
 │ App / API  │
-│ (Nodemailer)
 └─────┬──────┘
       │ SMTP
       ▼
 ┌──────────────┐
-│ SMTP Server  │ (smtp-server)
+│ SMTP Server  │
 └─────┬────────┘
       │ raw email
       ▼
 ┌──────────────┐
-│ Mail Parser  │ (mailparser)
+│ Mail Parser  │
 └─────┬────────┘
       │ parsed email
       ▼
 ┌──────────────┐
 │  Database    │
-│  (Emails)    │
 └─────┬────────┘
       │ IMAP
       ▼
 ┌──────────────┐
-│ IMAP Server  │ (ImapFlow)
+│ IMAP Server  │
 └─────┬────────┘
       │
       ▼
 ┌──────────────┐
-│ Mail Client  │
-│  / Web UI    │
+│ Email Client │
 └──────────────┘
 ```
 
-## 🔁 Email Flow (End-to-End)
+## 📊 Database Schema
+
+```mermaid
+erDiagram
+    User ||--o{ Mailbox : "owns"
+    User ||--o{ RefreshToken : "has"
+    User ||--o{ UserOtp : "has"
+    User ||--o| FileInstance : "has profile picture"
+
+    Mailbox ||--o{ Email : "contains"
+
+    Email ||--o{ EmailRecipient : "has"
+    Email ||--o{ FileInstance : "has attachments"
+
+    EmailRecipient {
+        string address
+        string name
+        enum role
+    }
+
+    Email {
+        string subject
+        string bodyText
+        string bodyHtml
+        string messageId
+        int size
+        datetime date
+        enum flags
+    }
+
+    Mailbox {
+        string name
+        enum type
+        int uidNext
+        int uidValidity
+    }
+```
+
+## 🔁 Email Flow
 
 1. **Sending Email**
    - App uses `Nodemailer`
@@ -85,10 +119,10 @@ This project:
    - Mailboxes: `INBOX`, `Sent`, `Drafts`
 4. **Reading Email**
    - IMAP server exposes mailboxes
-   - Email clients (or UI) connect via IMAP
+   - Email clients connect via IMAP
    - Read, search, mark read/unread
 
-## ✨ Core Features (MVP)
+## ✨ Core Features
 
 ### SMTP
 
@@ -101,26 +135,26 @@ This project:
 
 - `INBOX` support
 - Fetch emails
-- Flags (`Seen`, `Unread`)
+- Flags
 - Pagination
 
 ### Backend
 
 - Email persistence
 - Mailbox management
-- User accounts (local users)
+- User accounts
 
-## 🚀 Advanced Features (Phase 2)
+## 🚀 Advanced Features
 
-- STARTTLS (self-signed)
-- SMTP AUTH (LOGIN / PLAIN)
+- STARTTLS
+- SMTP AUTH
 - Multiple users & mailboxes
-- IMAP IDLE (live updates)
-- Web UI Inbox
-- Search (subject/body)
+- IMAP IDLE
+- **Real-time Event Triggers**
+- Search
 - Export `.eml`
 
-## 🔒 Security Scope (Intentionally Limited)
+## 🔒 Security Scope
 
 This project is local-only by design:
 
@@ -128,27 +162,6 @@ This project is local-only by design:
 - No DKIM / SPF / DMARC
 - No spam filtering
 - No open relay
-
-## 📁 Suggested Project Structure
-
-```text
-mail-server/
-├── smtp/
-│   └── smtp.server.ts
-├── imap/
-│   └── imap.server.ts
-├── parser/
-│   └── mail.parser.ts
-├── storage/
-│   ├── email.repository.ts
-│   └── attachment.store.ts
-├── api/
-│   └── mail.controller.ts
-├── ui/
-│   └── inbox/
-├── docker-compose.yml
-└── README.md
-```
 
 ## 🏷️ Resume-Ready Description
 
@@ -158,7 +171,7 @@ mail-server/
 
 ### ✅ Final Check
 
-- `nodemailer` → client (send emails)
+- `nodemailer` → client
 - `smtp-server` → receive emails
 - `mailparser` → parse raw emails
 - `ImapFlow` → read emails via IMAP

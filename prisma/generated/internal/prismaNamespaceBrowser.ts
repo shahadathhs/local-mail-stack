@@ -53,7 +53,10 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   UserOtp: 'UserOtp',
   RefreshToken: 'RefreshToken',
+  Email: 'Email',
+  EmailRecipient: 'EmailRecipient',
   FileInstance: 'FileInstance',
+  Mailbox: 'Mailbox',
   User: 'User'
 } as const
 
@@ -98,6 +101,34 @@ export const RefreshTokenScalarFieldEnum = {
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
+export const EmailScalarFieldEnum = {
+  id: 'id',
+  subject: 'subject',
+  bodyText: 'bodyText',
+  bodyHtml: 'bodyHtml',
+  messageId: 'messageId',
+  size: 'size',
+  date: 'date',
+  flags: 'flags',
+  mailboxId: 'mailboxId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmailScalarFieldEnum = (typeof EmailScalarFieldEnum)[keyof typeof EmailScalarFieldEnum]
+
+
+export const EmailRecipientScalarFieldEnum = {
+  id: 'id',
+  address: 'address',
+  name: 'name',
+  role: 'role',
+  emailId: 'emailId'
+} as const
+
+export type EmailRecipientScalarFieldEnum = (typeof EmailRecipientScalarFieldEnum)[keyof typeof EmailRecipientScalarFieldEnum]
+
+
 export const FileInstanceScalarFieldEnum = {
   id: 'id',
   filename: 'filename',
@@ -112,6 +143,20 @@ export const FileInstanceScalarFieldEnum = {
 } as const
 
 export type FileInstanceScalarFieldEnum = (typeof FileInstanceScalarFieldEnum)[keyof typeof FileInstanceScalarFieldEnum]
+
+
+export const MailboxScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  uidNext: 'uidNext',
+  uidValidity: 'uidValidity',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MailboxScalarFieldEnum = (typeof MailboxScalarFieldEnum)[keyof typeof MailboxScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {

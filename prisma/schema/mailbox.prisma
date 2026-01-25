@@ -1,0 +1,32 @@
+enum MailboxType {
+  INBOX
+  SENT
+  DRAFTS
+  TRASH
+  SPAM
+  ARCHIVE
+  CUSTOM
+}
+
+model Mailbox {
+  id String @id @default(uuid())
+
+  name String
+  type MailboxType @default(CUSTOM)
+
+  // IMAP specific
+  uidNext     Int @default(1)
+  uidValidity Int @default(1)
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  emails Email[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([userId, name])
+  @@map("mailboxes")
+}

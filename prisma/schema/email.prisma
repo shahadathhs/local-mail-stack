@@ -1,0 +1,57 @@
+enum RecipientRole {
+  FROM
+  TO
+  CC
+  BCC
+}
+
+enum EmailFlag {
+  SEEN
+  ANSWERED
+  FLAGGED
+  DELETED
+  DRAFT
+  RECENT
+}
+
+model Email {
+  id String @id @default(uuid())
+
+  // Core Mail Data
+  subject String?
+  bodyText String?
+  bodyHtml String?
+  
+  // Headers & Metadata
+  messageId String? @unique
+  size      Int     @default(0)
+  date      DateTime @default(now())
+  
+  // State
+  flags EmailFlag[] @default([])
+
+  // Relations
+  mailboxId String
+  mailbox   Mailbox @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  recipients EmailRecipient[]
+  attachments FileInstance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("emails")
+}
+
+model EmailRecipient {
+  id String @id @default(uuid())
+
+  address String
+  name    String?
+  role    RecipientRole
+
+  emailId String
+  email   Email  @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("email_recipients")
+}
