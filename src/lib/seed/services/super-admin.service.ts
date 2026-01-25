@@ -1,20 +1,23 @@
 import { ENVEnum } from '@/common/enum/env.enum';
+import { QueueEventsEnum } from '@/common/enum/queue-events.enum';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
-export class SuperAdminService implements OnModuleInit {
+export class SuperAdminService implements OnApplicationBootstrap {
   private readonly logger = new Logger(SuperAdminService.name);
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly authUtils: AuthUtilsService,
     private readonly configService: ConfigService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  onModuleInit(): Promise<void> {
+  onApplicationBootstrap(): Promise<void> {
     return this.seedSuperAdminUser();
   }
 
@@ -34,7 +37,7 @@ export class SuperAdminService implements OnModuleInit {
 
     // * create super admin
     if (!superAdminExists) {
-      await this.prisma.client.user.create({
+      const newUser = await this.prisma.client.user.create({
         data: {
           name: 'Super Admin',
           email: superAdminEmail,
@@ -45,6 +48,12 @@ export class SuperAdminService implements OnModuleInit {
           lastActiveAt: new Date(),
         },
       });
+
+      this.eventEmitter.emit(QueueEventsEnum.MAILBOX_SETUP, {
+        userId: newUser.id,
+        email: newUser.email,
+      });
+
       this.logger.log(
         `[CREATE] Super Admin user created with email: ${superAdminEmail}`,
       );
@@ -52,7 +61,7 @@ export class SuperAdminService implements OnModuleInit {
     }
 
     // * Log & update if super admin already exists
-    await this.prisma.client.user.update({
+    const updatedUser = await this.prisma.client.user.update({
       where: {
         email: superAdminEmail,
       },
@@ -62,6 +71,11 @@ export class SuperAdminService implements OnModuleInit {
         lastActiveAt: new Date(),
         lastLoginAt: new Date(),
       },
+    });
+
+    this.eventEmitter.emit(QueueEventsEnum.MAILBOX_SETUP, {
+      userId: updatedUser.id,
+      email: updatedUser.email,
     });
 
     this.logger.log(

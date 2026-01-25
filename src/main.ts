@@ -8,9 +8,19 @@ import { AppModule } from './app.module';
 import { ENVEnum } from './common/enum/env.enum';
 import { AllExceptionsFilter } from './core/filter/http-exception.filter';
 
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { rawBody: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    rawBody: true,
+  });
   const configService = app.get(ConfigService);
+
+  // * Configure View Engine (Handlebars)
+  app.useStaticAssets(join(__dirname, '..', '..', 'public')); // If we had public assets
+  app.setBaseViewsDir(join(__dirname, '..', '..', 'views'));
+  app.setViewEngine('hbs');
 
   // * enable cors
   app.enableCors({

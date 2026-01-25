@@ -241,6 +241,7 @@ export type UserWhereInput = {
   profilePicture?: Prisma.XOR<Prisma.FileInstanceNullableScalarRelationFilter, Prisma.FileInstanceWhereInput> | null
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   otps?: Prisma.UserOtpListRelationFilter
+  mailboxes?: Prisma.MailboxListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -259,6 +260,7 @@ export type UserOrderByWithRelationInput = {
   profilePicture?: Prisma.FileInstanceOrderByWithRelationInput
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
   otps?: Prisma.UserOtpOrderByRelationAggregateInput
+  mailboxes?: Prisma.MailboxOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -280,6 +282,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   profilePicture?: Prisma.XOR<Prisma.FileInstanceNullableScalarRelationFilter, Prisma.FileInstanceWhereInput> | null
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   otps?: Prisma.UserOtpListRelationFilter
+  mailboxes?: Prisma.MailboxListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -333,6 +336,7 @@ export type UserCreateInput = {
   profilePicture?: Prisma.FileInstanceCreateNestedOneWithoutUsersInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   otps?: Prisma.UserOtpCreateNestedManyWithoutUserInput
+  mailboxes?: Prisma.MailboxCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -350,6 +354,7 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.UserOtpUncheckedCreateNestedManyWithoutUserInput
+  mailboxes?: Prisma.MailboxUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -367,6 +372,7 @@ export type UserUpdateInput = {
   profilePicture?: Prisma.FileInstanceUpdateOneWithoutUsersNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   otps?: Prisma.UserOtpUpdateManyWithoutUserNestedInput
+  mailboxes?: Prisma.MailboxUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -384,6 +390,7 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.UserOtpUncheckedUpdateManyWithoutUserNestedInput
+  mailboxes?: Prisma.MailboxUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -560,6 +567,20 @@ export type UserUncheckedUpdateManyWithoutProfilePictureNestedInput = {
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
+export type UserCreateNestedOneWithoutMailboxesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMailboxesInput, Prisma.UserUncheckedCreateWithoutMailboxesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMailboxesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMailboxesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMailboxesInput, Prisma.UserUncheckedCreateWithoutMailboxesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMailboxesInput
+  upsert?: Prisma.UserUpsertWithoutMailboxesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMailboxesInput, Prisma.UserUpdateWithoutMailboxesInput>, Prisma.UserUncheckedUpdateWithoutMailboxesInput>
+}
+
 export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
 }
@@ -576,10 +597,6 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type UserCreateWithoutOtpsInput = {
   id?: string
   name?: string
@@ -594,6 +611,7 @@ export type UserCreateWithoutOtpsInput = {
   updatedAt?: Date | string
   profilePicture?: Prisma.FileInstanceCreateNestedOneWithoutUsersInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mailboxes?: Prisma.MailboxCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOtpsInput = {
@@ -610,6 +628,7 @@ export type UserUncheckedCreateWithoutOtpsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mailboxes?: Prisma.MailboxUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOtpsInput = {
@@ -642,6 +661,7 @@ export type UserUpdateWithoutOtpsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicture?: Prisma.FileInstanceUpdateOneWithoutUsersNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mailboxes?: Prisma.MailboxUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOtpsInput = {
@@ -658,6 +678,7 @@ export type UserUncheckedUpdateWithoutOtpsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mailboxes?: Prisma.MailboxUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRefreshTokensInput = {
@@ -674,6 +695,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   updatedAt?: Date | string
   profilePicture?: Prisma.FileInstanceCreateNestedOneWithoutUsersInput
   otps?: Prisma.UserOtpCreateNestedManyWithoutUserInput
+  mailboxes?: Prisma.MailboxCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -690,6 +712,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   otps?: Prisma.UserOtpUncheckedCreateNestedManyWithoutUserInput
+  mailboxes?: Prisma.MailboxUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -722,6 +745,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicture?: Prisma.FileInstanceUpdateOneWithoutUsersNestedInput
   otps?: Prisma.UserOtpUpdateManyWithoutUserNestedInput
+  mailboxes?: Prisma.MailboxUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -738,6 +762,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   otps?: Prisma.UserOtpUncheckedUpdateManyWithoutUserNestedInput
+  mailboxes?: Prisma.MailboxUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProfilePictureInput = {
@@ -754,6 +779,7 @@ export type UserCreateWithoutProfilePictureInput = {
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   otps?: Prisma.UserOtpCreateNestedManyWithoutUserInput
+  mailboxes?: Prisma.MailboxCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProfilePictureInput = {
@@ -770,6 +796,7 @@ export type UserUncheckedCreateWithoutProfilePictureInput = {
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.UserOtpUncheckedCreateNestedManyWithoutUserInput
+  mailboxes?: Prisma.MailboxUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProfilePictureInput = {
@@ -816,6 +843,90 @@ export type UserScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }
 
+export type UserCreateWithoutMailboxesInput = {
+  id?: string
+  name?: string
+  email: string
+  password: string
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  isVerified?: boolean
+  lastLoginAt?: Date | string | null
+  lastActiveAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  profilePicture?: Prisma.FileInstanceCreateNestedOneWithoutUsersInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  otps?: Prisma.UserOtpCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutMailboxesInput = {
+  id?: string
+  name?: string
+  email: string
+  password: string
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  isVerified?: boolean
+  lastLoginAt?: Date | string | null
+  lastActiveAt?: Date | string | null
+  profilePictureId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  otps?: Prisma.UserOtpUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutMailboxesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMailboxesInput, Prisma.UserUncheckedCreateWithoutMailboxesInput>
+}
+
+export type UserUpsertWithoutMailboxesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMailboxesInput, Prisma.UserUncheckedUpdateWithoutMailboxesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMailboxesInput, Prisma.UserUncheckedCreateWithoutMailboxesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMailboxesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMailboxesInput, Prisma.UserUncheckedUpdateWithoutMailboxesInput>
+}
+
+export type UserUpdateWithoutMailboxesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profilePicture?: Prisma.FileInstanceUpdateOneWithoutUsersNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  otps?: Prisma.UserOtpUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMailboxesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profilePictureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  otps?: Prisma.UserOtpUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateManyProfilePictureInput = {
   id?: string
   name?: string
@@ -844,6 +955,7 @@ export type UserUpdateWithoutProfilePictureInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   otps?: Prisma.UserOtpUpdateManyWithoutUserNestedInput
+  mailboxes?: Prisma.MailboxUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfilePictureInput = {
@@ -860,6 +972,7 @@ export type UserUncheckedUpdateWithoutProfilePictureInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.UserOtpUncheckedUpdateManyWithoutUserNestedInput
+  mailboxes?: Prisma.MailboxUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutProfilePictureInput = {
@@ -884,11 +997,13 @@ export type UserUncheckedUpdateManyWithoutProfilePictureInput = {
 export type UserCountOutputType = {
   refreshTokens: number
   otps: number
+  mailboxes: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
   otps?: boolean | UserCountOutputTypeCountOtpsArgs
+  mailboxes?: boolean | UserCountOutputTypeCountMailboxesArgs
 }
 
 /**
@@ -915,6 +1030,13 @@ export type UserCountOutputTypeCountOtpsArgs<ExtArgs extends runtime.Types.Exten
   where?: Prisma.UserOtpWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMailboxesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MailboxWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -932,6 +1054,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   profilePicture?: boolean | Prisma.User$profilePictureArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   otps?: boolean | Prisma.User$otpsArgs<ExtArgs>
+  mailboxes?: boolean | Prisma.User$mailboxesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -987,6 +1110,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   profilePicture?: boolean | Prisma.User$profilePictureArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   otps?: boolean | Prisma.User$otpsArgs<ExtArgs>
+  mailboxes?: boolean | Prisma.User$mailboxesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1002,6 +1126,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     profilePicture: Prisma.$FileInstancePayload<ExtArgs> | null
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
     otps: Prisma.$UserOtpPayload<ExtArgs>[]
+    mailboxes: Prisma.$MailboxPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1413,6 +1538,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   profilePicture<T extends Prisma.User$profilePictureArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$profilePictureArgs<ExtArgs>>): Prisma.Prisma__FileInstanceClient<runtime.Types.Result.GetResult<Prisma.$FileInstancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   otps<T extends Prisma.User$otpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$otpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserOtpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  mailboxes<T extends Prisma.User$mailboxesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mailboxesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MailboxPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1914,6 +2040,30 @@ export type User$otpsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   take?: number
   skip?: number
   distinct?: Prisma.UserOtpScalarFieldEnum | Prisma.UserOtpScalarFieldEnum[]
+}
+
+/**
+ * User.mailboxes
+ */
+export type User$mailboxesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Mailbox
+   */
+  select?: Prisma.MailboxSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Mailbox
+   */
+  omit?: Prisma.MailboxOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MailboxInclude<ExtArgs> | null
+  where?: Prisma.MailboxWhereInput
+  orderBy?: Prisma.MailboxOrderByWithRelationInput | Prisma.MailboxOrderByWithRelationInput[]
+  cursor?: Prisma.MailboxWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MailboxScalarFieldEnum | Prisma.MailboxScalarFieldEnum[]
 }
 
 /**

@@ -28,10 +28,25 @@ export type UserOtp = Prisma.UserOtpModel
  */
 export type RefreshToken = Prisma.RefreshTokenModel
 /**
+ * Model Email
+ * 
+ */
+export type Email = Prisma.EmailModel
+/**
+ * Model EmailRecipient
+ * 
+ */
+export type EmailRecipient = Prisma.EmailRecipientModel
+/**
  * Model FileInstance
  * 
  */
 export type FileInstance = Prisma.FileInstanceModel
+/**
+ * Model Mailbox
+ * 
+ */
+export type Mailbox = Prisma.MailboxModel
 /**
  * Model User
  * 

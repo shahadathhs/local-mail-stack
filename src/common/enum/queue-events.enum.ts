@@ -5,5 +5,5 @@ export enum EventsEnum {
 }
 
 export enum QueueEventsEnum {
-  GENERIC = 'queue:generic',
+  MAILBOX_SETUP = 'queue:mailbox_setup',
 }

@@ -10,6 +10,9 @@
  */
 export type * from './models/UserOtp'
 export type * from './models/RefreshToken'
+export type * from './models/Email'
+export type * from './models/EmailRecipient'
 export type * from './models/FileInstance'
+export type * from './models/Mailbox'
 export type * from './models/User'
 export type * from './commonInputTypes'

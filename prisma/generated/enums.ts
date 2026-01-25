@@ -17,6 +17,28 @@ export const OtpType = {
 export type OtpType = (typeof OtpType)[keyof typeof OtpType]
 
 
+export const RecipientRole = {
+  FROM: 'FROM',
+  TO: 'TO',
+  CC: 'CC',
+  BCC: 'BCC'
+} as const
+
+export type RecipientRole = (typeof RecipientRole)[keyof typeof RecipientRole]
+
+
+export const EmailFlag = {
+  SEEN: 'SEEN',
+  ANSWERED: 'ANSWERED',
+  FLAGGED: 'FLAGGED',
+  DELETED: 'DELETED',
+  DRAFT: 'DRAFT',
+  RECENT: 'RECENT'
+} as const
+
+export type EmailFlag = (typeof EmailFlag)[keyof typeof EmailFlag]
+
+
 export const FileType = {
   image: 'image',
   docs: 'docs',
@@ -28,6 +50,19 @@ export const FileType = {
 } as const
 
 export type FileType = (typeof FileType)[keyof typeof FileType]
+
+
+export const MailboxType = {
+  INBOX: 'INBOX',
+  SENT: 'SENT',
+  DRAFTS: 'DRAFTS',
+  TRASH: 'TRASH',
+  SPAM: 'SPAM',
+  ARCHIVE: 'ARCHIVE',
+  CUSTOM: 'CUSTOM'
+} as const
+
+export type MailboxType = (typeof MailboxType)[keyof typeof MailboxType]
 
 
 export const UserRole = {

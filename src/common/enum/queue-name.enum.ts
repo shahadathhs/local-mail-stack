@@ -1,4 +1,4 @@
 export enum QueueName {
   NOTIFICATION = 'notification',
-  GENERIC = 'generic',
+  MAILBOX = 'mailbox',
 }

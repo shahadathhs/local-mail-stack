@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 
 import { QueueModule } from './queue/queue.module';
 import { SeedModule } from './seed/seed.module';
+import { SmtpModule } from './smtp/smtp.module';
 import { UtilsModule } from './utils/utils.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { UtilsModule } from './utils/utils.module';
     SeedModule,
     UtilsModule,
     QueueModule,
+    SmtpModule,
   ],
   exports: [],
   providers: [],
