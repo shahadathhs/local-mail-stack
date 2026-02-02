@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/shahadathhs/local-mail-stack/compare/v1.0.0...v1.1.0) (2026-02-02)
+
+
+### Features
+
+* fixed sent folder email get ([19a5f99](https://github.com/shahadathhs/local-mail-stack/commit/19a5f99101cc78b4ae54ed865adc34f6fc6f44fb))
+* mail ui setup completed ([b34484f](https://github.com/shahadathhs/local-mail-stack/commit/b34484fc88e2e5529cc6558110a12834b2a04d6a))
+* web mail module ongoing ([7be0483](https://github.com/shahadathhs/local-mail-stack/commit/7be0483e42efac3c593c0eb40798d102cde8b0f3))
+
 # 1.0.0 (2026-01-25)
 
 
