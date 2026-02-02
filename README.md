@@ -1,87 +1,120 @@
 # Local Mail Stack
 
-📧 **End-to-End Local Email Environment for Professional Development**
+📧 **Self-hosted Local Email Environment (SMTP + IMAP) for Development & Testing**
 
-## One-liner
+## Overview
 
-A self-hosted, professional-grade email system that supports sending, receiving, storing, and managing emails using real SMTP and IMAP protocols — featuring a premium Web UI for a complete "Mini Gmail" experience locally.
+**Local Mail Stack** is a professional-grade email ecosystem that allows developers to test email flows locally using real SMTP and IMAP protocols. It includes a custom protocol implementation and a premium Web UI to monitor and manage local mailboxes.
 
----
+## 🏗️ System Architecture
 
-## 🎯 The Ultimate Dev Tool
+```mermaid
+graph LR
+    subgraph Client Layer
+        App[External Apps]
+        MClient[Mail Clients]
+        Browser[Web Browser]
+    end
 
-Stop relying on third-party sandbox services or real Gmail accounts for development. **Local Mail Stack** gives you:
+    subgraph Stack [Local Mail Stack]
+        SMTP[SMTP Service:1025]
+        IMAP[IMAP Service:1143]
+        Web[Web UI:3000]
+        API[Auth/Dev API]
+    end
 
-- **100% Privacy**: No data leaves your machine.
-- **Protocol Accuracy**: Uses real SMTP (port 1025) and IMAP (port 1143) protocols.
-- **Visual Excellence**: A premium, interactive Web UI to monitor and manage your mail flow.
-- **Zero Latency**: Instant delivery for testing transactional flows and bulk notifications.
+    subgraph Data [Data Layer]
+        DB[(PostgreSQL)]
+        Redis[(Redis/Queue)]
+        Files[File Storage]
+    end
 
----
+    App -->|SMTP| SMTP
+    MClient -->|IMAP| IMAP
+    Browser -->|HTTP| Web
 
-## 🧱 Technology Stack
-
-| Layer                 | Tech                                          |
-| :-------------------- | :-------------------------------------------- |
-| **SMTP Server**       | `smtp-server` (TCP Port 1025)                 |
-| **IMAP Server**       | Custom Node.js TCP Implementation (Port 1143) |
-| **Web Interface**     | Handlebars + Vanilla CSS (Gmail-inspired)     |
-| **Email Parsing**     | `mailparser` (RFC compliant)                  |
-| **Backend Framework** | NestJS                                        |
-| **Database & ORM**    | PostgreSQL + Prisma                           |
-| **Queue Management**  | BullMQ + Redis                                |
-
----
-
-## 🚀 Key Features
-
-### 📬 Dual-Protocol Support
-
-- **SMTP**: Accept connections from any app. Support for attachments, multiple recipients (To/Cc/Bcc), and raw data streams.
-- **IMAP**: Connect your favorite mail client (Thunderbird, Apple Mail). Supports folder listing, fetching, and flag (Read/Unread) updates.
-
-### 🎨 Premium Dev Mailbox (Web UI)
-
-- **"Mini Gmail" Experience**: A state-of-the-art interface with folder navigation, search, and bulk actions.
-- **Live Composition**: Compose and send emails directly between local accounts via the Web UI.
-- **Powerful Search**: Server-side full-text search across subjects, bodies, and recipients.
-- **Action Toolbar**: Archive, Delete, and Mark as Read/Unread with one click.
-- **Attachment Preview**: Integrated handling and downloading of email attachments.
-
-### 🛠️ Developer-First Architecture
-
-- **Refactored Module Structure**: Clean separation between `auth` and `web` modules with dedicated services and DTOs.
-- **Global Types & Interfaces**: Centralized `@common` layer for shared domain logic.
-- **Signed URLs**: Secure access to development mailboxes via cryptographically signed links.
-
----
-
-## 🔄 How it Works
-
-1.  **Transport**: Your application sends mail via SMTP to `localhost:1025`.
-2.  **Ingestion**: `SmtpService` parses the raw stream into structured database records.
-3.  **Organization**: `MailboxSetupWorker` ensures users have standard folders (Inbox, Sent, Trash, etc.).
-4.  **Access**:
-    - **API**: Use the `/dev` endpoints to manage mail programmatically.
-    - **Web**: Access the **Local Mail Stack UI** for a visual overview.
-    - **IMAP**: Connect an external client to `localhost:1143`.
-
----
-
-## 🏷️ Resume-Ready Description
-
-> Engineered a comprehensive local email ecosystem using NestJS, featuring custom-built SMTP and IMAP protocol handlers. Developed a high-performance web interface using Handlebars and Vanilla CSS, enabling professional-grade email testing with functional composition, server-side search, and bulk management. Leveraged PostgreSQL for persistent storage and Redis/BullMQ for background mailbox orchestration.
-
----
-
-### 🚀 Quick Start
-
-```bash
-# Start the infrastructure (DB, Redis)
-sudo make local-up
-
-# Start the application
-pnpm dev
+    SMTP -.->|Save| DB
+    IMAP -.->|Fetch| DB
+    Web -.->|Fetch| DB
+    SMTP -.->|Attachments| Files
+    API -.->|Queue| Redis
 ```
 
-_This is a professional mail system, designed for serious developers._
+---
+
+## 📚 Flow Documentation
+
+For a deep dive into how specific modules operate, refer to our technical flow guides:
+
+| Flow Guide                                       | Description                                                           |
+| :----------------------------------------------- | :-------------------------------------------------------------------- |
+| [🔐 **Authentication Flow**](docs/auth-flow.md)  | Details registration, internal verification emails, and OTP logic.    |
+| [📧 **Mail Processing Flow**](docs/mail-flow.md) | Explains SMTP ingestion, dual-delivery logic, and storage mechanisms. |
+
+---
+
+## 🧱 Technical Stack
+
+- **Backend**: NestJS
+- **Database**: PostgreSQL (Prisma ORM)
+- **Caching & Queues**: Redis & BullMQ
+- **Protocols**:
+  - **SMTP**: `smtp-server` (Port 1025)
+  - **IMAP**: Custom TCP handler (Port 1143)
+- **Web UI**: Handlebars + Vanilla CSS
+
+---
+
+## 🚀 Local Setup Guide
+
+### 📋 Prerequisites
+
+Ensure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (v20+)
+- [pnpm](https://pnpm.io/)
+- [Docker & Docker Compose](https://www.docker.com/)
+- [Make](https://www.gnu.org/software/make/)
+
+### 1. Environment Configuration
+
+```bash
+cp .env.example .env
+```
+
+### 2. Hybrid Development (Recommended)
+
+```bash
+# Start DB & Redis, install deps, run migrations, and start app
+make local
+```
+
+### 3. Full Docker Environment
+
+```bash
+# Build and start all services in development mode
+make dev-up
+```
+
+---
+
+## 🛠 Makefile Reference
+
+| Command       | Description                              |
+| :------------ | :--------------------------------------- |
+| `make local`  | **Recommended**: Start deps + local app. |
+| `make dev-up` | Start full stack in Docker (Dev mode).   |
+| `make build`  | Build the production Docker image.       |
+| `make start`  | Start the production stack (Detached).   |
+
+---
+
+## 🔌 Port Mappings
+
+| Service        | Host Port | Description              |
+| :------------- | :-------- | :----------------------- |
+| **Web UI**     | `3000`    | Mini Gmail Interface     |
+| **SMTP**       | `1025`    | Inbound Mail Port        |
+| **IMAP**       | `1143`    | Mail Client Sync Port    |
+| **PostgreSQL** | `5433`    | Database access          |
+| **pgAdmin**    | `8123`    | DB Web Management (Prod) |
