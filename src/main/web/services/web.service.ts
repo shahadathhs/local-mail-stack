@@ -1,9 +1,10 @@
 import { MailboxMessage } from '@/common/interface/mailbox.interface';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
-import { UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EmailFlag, MailboxType } from '@prisma';
 
+@Injectable()
 export class WebService {
   constructor(
     private readonly prisma: PrismaService,

@@ -1,3 +1,4 @@
+import { successResponse } from '@/common/utils/response.util';
 import { MailService } from '@/lib/mail/mail.service';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -18,14 +19,15 @@ export class WebMailService {
       text: dto.body,
       html: dto.html || dto.body,
     });
-    return { success: true, message: 'Mail sent successfully' };
+    return successResponse(null, 'Mail sent successfully');
   }
 
   async updateFlags(emailId: string, flags: EmailFlag[]) {
-    return this.prisma.client.email.update({
+    const result = await this.prisma.client.email.update({
       where: { id: emailId },
       data: { flags },
     });
+    return successResponse(result, 'Flags updated successfully');
   }
 
   async moveToFolder(
@@ -47,10 +49,11 @@ export class WebMailService {
       throw new NotFoundException(`Mailbox ${folderType} not found`);
     }
 
-    return this.prisma.client.email.update({
+    const result = await this.prisma.client.email.update({
       where: { id: emailId },
       data: { mailboxId: targetMailbox.id },
     });
+    return successResponse(result, `Email moved to ${folderType}`);
   }
 
   async deleteEmail(emailId: string, userEmail: string) {
@@ -62,7 +65,10 @@ export class WebMailService {
     if (!email) throw new NotFoundException('Email not found');
 
     if (email.mailbox.type === MailboxType.TRASH) {
-      return this.prisma.client.email.delete({ where: { id: emailId } });
+      const result = await this.prisma.client.email.delete({
+        where: { id: emailId },
+      });
+      return successResponse(result, 'Email permanently deleted');
     } else {
       return this.moveToFolder(emailId, userEmail, MailboxType.TRASH);
     }
