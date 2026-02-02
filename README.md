@@ -1,181 +1,87 @@
 # Local Mail Stack
 
-📧 **Local Mail Server for Development & Testing**
+📧 **End-to-End Local Email Environment for Professional Development**
 
 ## One-liner
 
-A fully local email system that supports sending, receiving, storing, and reading emails using real SMTP and IMAP protocols — built for developers to test email flows without external services.
-
-## 🎯 Problem This Solves
-
-Developers usually rely on:
-
-- **Gmail**
-- **Third-party tools**
-
-This project:
-
-- Runs 100% locally
-- Uses real protocols
-- **Gives full control + visibility** over internal mail flow
-- **Perfect for testing transactional emails**
-
-## 🧱 Core Stack
-
-| Layer             | Tech          |
-| :---------------- | :------------ |
-| **SMTP Server**   | `smtp-server` |
-| **Email Sending** | `nodemailer`  |
-| **Email Parsing** | `mailparser`  |
-| **IMAP Server**   | `ImapFlow`    |
-| **Backend API**   | NestJS        |
-| **Storage**       | PostgreSQL    |
-| **Deployment**    | Docker        |
-
-## 🧩 High-Level Architecture
-
-```text
-┌────────────┐
-│ App / API  │
-└─────┬──────┘
-      │ SMTP
-      ▼
-┌──────────────┐
-│ SMTP Server  │
-└─────┬────────┘
-      │ raw email
-      ▼
-┌──────────────┐
-│ Mail Parser  │
-└─────┬────────┘
-      │ parsed email
-      ▼
-┌──────────────┐
-│  Database    │
-└─────┬────────┘
-      │ IMAP
-      ▼
-┌──────────────┐
-│ IMAP Server  │
-└─────┬────────┘
-      │
-      ▼
-┌──────────────┐
-│ Email Client │
-└──────────────┘
-```
-
-## 📊 Database Schema
-
-```mermaid
-erDiagram
-    User ||--o{ Mailbox : "owns"
-    User ||--o{ RefreshToken : "has"
-    User ||--o{ UserOtp : "has"
-    User ||--o| FileInstance : "has profile picture"
-
-    Mailbox ||--o{ Email : "contains"
-
-    Email ||--o{ EmailRecipient : "has"
-    Email ||--o{ FileInstance : "has attachments"
-
-    EmailRecipient {
-        string address
-        string name
-        enum role
-    }
-
-    Email {
-        string subject
-        string bodyText
-        string bodyHtml
-        string messageId
-        int size
-        datetime date
-        enum flags
-    }
-
-    Mailbox {
-        string name
-        enum type
-        int uidNext
-        int uidValidity
-    }
-```
-
-## 🔁 Email Flow
-
-1. **Sending Email**
-   - App uses `Nodemailer`
-   - Connects to `localhost:2525`
-   - Sends email via SMTP
-2. **Receiving Email**
-   - `smtp-server` receives raw email
-   - Passes stream to `mailparser`
-   - Extracts: `From` / `To`, `Subject`, `Text` / `HTML`, `Attachments`
-3. **Storage**
-   - Emails stored in DB
-   - Attachments saved to filesystem
-   - Mailboxes: `INBOX`, `Sent`, `Drafts`
-4. **Reading Email**
-   - IMAP server exposes mailboxes
-   - Email clients connect via IMAP
-   - Read, search, mark read/unread
-
-## ✨ Core Features
-
-### SMTP
-
-- Accept incoming emails
-- Support multiple recipients
-- Handle attachments
-- Optional SMTP AUTH
-
-### IMAP
-
-- `INBOX` support
-- Fetch emails
-- Flags
-- Pagination
-
-### Backend
-
-- Email persistence
-- Mailbox management
-- Email persistence
-- Mailbox management
-- User accounts ([View Auth Flow](./docs/auth-flow.md))
-
-## 🚀 Advanced Features
-
-- STARTTLS
-- SMTP AUTH
-- Multiple users & mailboxes
-- IMAP IDLE
-- **Real-time Event Triggers**
-- Search
-- Export `.eml`
-
-## 🔒 Security Scope
-
-This project is local-only by design:
-
-- No public email sending
-- No DKIM / SPF / DMARC
-- No spam filtering
-- No open relay
-
-## 🏷️ Resume-Ready Description
-
-> Built a local email server supporting SMTP and IMAP protocols using Node.js. Implemented email parsing, storage, and mailbox access using `Nodemailer`, `smtp-server`, `mailparser`, and `ImapFlow`. Designed for local development and testing of transactional email workflows.
+A self-hosted, professional-grade email system that supports sending, receiving, storing, and managing emails using real SMTP and IMAP protocols — featuring a premium Web UI for a complete "Mini Gmail" experience locally.
 
 ---
 
-### ✅ Final Check
+## 🎯 The Ultimate Dev Tool
 
-- `nodemailer` → client
-- `smtp-server` → receive emails
-- `mailparser` → parse raw emails
-- `ImapFlow` → read emails via IMAP
+Stop relying on third-party sandbox services or real Gmail accounts for development. **Local Mail Stack** gives you:
 
-_This is a real mail system, not a mock._
+- **100% Privacy**: No data leaves your machine.
+- **Protocol Accuracy**: Uses real SMTP (port 1025) and IMAP (port 1143) protocols.
+- **Visual Excellence**: A premium, interactive Web UI to monitor and manage your mail flow.
+- **Zero Latency**: Instant delivery for testing transactional flows and bulk notifications.
+
+---
+
+## 🧱 Technology Stack
+
+| Layer                 | Tech                                          |
+| :-------------------- | :-------------------------------------------- |
+| **SMTP Server**       | `smtp-server` (TCP Port 1025)                 |
+| **IMAP Server**       | Custom Node.js TCP Implementation (Port 1143) |
+| **Web Interface**     | Handlebars + Vanilla CSS (Gmail-inspired)     |
+| **Email Parsing**     | `mailparser` (RFC compliant)                  |
+| **Backend Framework** | NestJS                                        |
+| **Database & ORM**    | PostgreSQL + Prisma                           |
+| **Queue Management**  | BullMQ + Redis                                |
+
+---
+
+## 🚀 Key Features
+
+### 📬 Dual-Protocol Support
+
+- **SMTP**: Accept connections from any app. Support for attachments, multiple recipients (To/Cc/Bcc), and raw data streams.
+- **IMAP**: Connect your favorite mail client (Thunderbird, Apple Mail). Supports folder listing, fetching, and flag (Read/Unread) updates.
+
+### 🎨 Premium Dev Mailbox (Web UI)
+
+- **"Mini Gmail" Experience**: A state-of-the-art interface with folder navigation, search, and bulk actions.
+- **Live Composition**: Compose and send emails directly between local accounts via the Web UI.
+- **Powerful Search**: Server-side full-text search across subjects, bodies, and recipients.
+- **Action Toolbar**: Archive, Delete, and Mark as Read/Unread with one click.
+- **Attachment Preview**: Integrated handling and downloading of email attachments.
+
+### 🛠️ Developer-First Architecture
+
+- **Refactored Module Structure**: Clean separation between `auth` and `web` modules with dedicated services and DTOs.
+- **Global Types & Interfaces**: Centralized `@common` layer for shared domain logic.
+- **Signed URLs**: Secure access to development mailboxes via cryptographically signed links.
+
+---
+
+## 🔄 How it Works
+
+1.  **Transport**: Your application sends mail via SMTP to `localhost:1025`.
+2.  **Ingestion**: `SmtpService` parses the raw stream into structured database records.
+3.  **Organization**: `MailboxSetupWorker` ensures users have standard folders (Inbox, Sent, Trash, etc.).
+4.  **Access**:
+    - **API**: Use the `/dev` endpoints to manage mail programmatically.
+    - **Web**: Access the **Local Mail Stack UI** for a visual overview.
+    - **IMAP**: Connect an external client to `localhost:1143`.
+
+---
+
+## 🏷️ Resume-Ready Description
+
+> Engineered a comprehensive local email ecosystem using NestJS, featuring custom-built SMTP and IMAP protocol handlers. Developed a high-performance web interface using Handlebars and Vanilla CSS, enabling professional-grade email testing with functional composition, server-side search, and bulk management. Leveraged PostgreSQL for persistent storage and Redis/BullMQ for background mailbox orchestration.
+
+---
+
+### 🚀 Quick Start
+
+```bash
+# Start the infrastructure (DB, Redis)
+sudo make local-up
+
+# Start the application
+pnpm dev
+```
+
+_This is a professional mail system, designed for serious developers._

@@ -114,6 +114,44 @@ export class FileService {
     return this.create(createFileDto);
   }
 
+  @HandleError('Error saving file from buffer', 'file')
+  async saveFileFromBuffer(
+    buffer: Buffer,
+    originalFilename: string,
+    mimetype?: string,
+  ) {
+    const fileId = uuidv4();
+    const fileExt = path.extname(originalFilename);
+    const filename = `${fileId}${fileExt}`;
+
+    const mimeType =
+      mimetype || mime.lookup(originalFilename) || 'application/octet-stream';
+
+    const fileType = this.mapMimeToPrismaFileType(mimeType);
+
+    const uploadDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadDir, filename);
+    const fileUrl = `${this.configService.getOrThrow<string>('BASE_URL')}/files/${filename}`;
+
+    fs.writeFileSync(filePath, buffer);
+
+    const createFileDto: CreateFileDto = {
+      filename,
+      originalFilename,
+      path: filePath,
+      url: fileUrl,
+      fileType,
+      mimeType,
+      size: buffer.length,
+    };
+
+    return this.create(createFileDto);
+  }
+
   private mapMimeToPrismaFileType(
     mimeType: string | null | undefined,
   ): FileType {

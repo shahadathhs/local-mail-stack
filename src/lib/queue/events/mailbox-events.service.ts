@@ -1,14 +1,10 @@
 import { QueueEventsEnum } from '@/common/enum/queue-events.enum';
 import { QueueName } from '@/common/enum/queue-name.enum';
+import { MailboxSetupPayload } from '@/common/interface/queue.interface';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Queue } from 'bullmq';
-
-interface MailboxSetupPayload {
-  userId: string;
-  email: string;
-}
 
 @Injectable()
 export class MailboxEventsService {

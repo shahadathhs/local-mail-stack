@@ -1,110 +1,101 @@
-import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
+  Post,
   Query,
   Render,
   UnauthorizedException,
 } from '@nestjs/common';
-import { MailboxType } from '@prisma';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { EmailFlag, MailboxType } from '@prisma';
+import { SendMailDto } from './dto/send-mail.dto';
+import { WebMailService } from './services/web-mail.service';
+import { WebService } from './services/web.service';
 
-interface MailboxMessage {
-  id: string;
-  subject: string;
-  text: string;
-  html: string;
-  date: string;
-  from: string;
-  to: string;
-}
-
+@ApiTags('Dev Mailbox')
 @Controller('dev')
 export class WebController {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly webService: WebService,
+    private readonly webMailService: WebMailService,
     private readonly utils: AuthUtilsService,
   ) {}
 
+  private verifySignature(email: string, sig: string) {
+    if (!this.utils.verifyMailboxUrlSignature(email, sig)) {
+      throw new UnauthorizedException('Invalid signature');
+    }
+  }
+
+  @ApiOperation({ summary: 'View Dev Mailbox' })
   @Get('mailbox/:email')
   @Render('mailbox')
   async getMailbox(
     @Param('email') email: string,
     @Query('sig') sig: string,
     @Query('folder') folder: string = 'INBOX',
+    @Query('q') q?: string,
   ) {
-    if (!this.utils.verifyMailboxUrlSignature(email, sig)) {
-      throw new UnauthorizedException(
-        'Invalid or missing signature for Dev Mailbox',
-      );
-    }
+    return this.webService.getMailboxData(email, sig, folder, q);
+  }
 
-    const user = await this.prisma.client.user.findUnique({
-      where: { email },
-      include: {
-        mailboxes: {
-          include: {
-            _count: {
-              select: { emails: true },
-            },
-          },
-          orderBy: { type: 'asc' },
-        },
-      },
-    });
+  @ApiOperation({ summary: 'Send Mail from Dev UI' })
+  @Post('mail/send')
+  async sendMail(
+    @Query('email') email: string,
+    @Query('sig') sig: string,
+    @Body() dto: SendMailDto,
+  ) {
+    this.verifySignature(email, sig);
+    return this.webMailService.sendMail(email, dto);
+  }
 
-    if (!user || user.mailboxes.length === 0) {
-      return { email, mailboxes: [], messages: [], currentFolder: folder };
-    }
+  @ApiOperation({ summary: 'Mark mail as Read' })
+  @Patch('mail/:id/read')
+  async markAsRead(
+    @Param('id') id: string,
+    @Query('email') email: string,
+    @Query('sig') sig: string,
+  ) {
+    this.verifySignature(email, sig);
+    return this.webMailService.updateFlags(id, [EmailFlag.SEEN]);
+  }
 
-    // Find the currently selected mailbox
-    const currentMailbox =
-      user.mailboxes.find((m) => m.name === folder || m.type === folder) ||
-      user.mailboxes.find((m) => m.type === MailboxType.INBOX);
+  @ApiOperation({ summary: 'Mark mail as Unread' })
+  @Patch('mail/:id/unread')
+  async markAsUnread(
+    @Param('id') id: string,
+    @Query('email') email: string,
+    @Query('sig') sig: string,
+  ) {
+    this.verifySignature(email, sig);
+    return this.webMailService.updateFlags(id, []);
+  }
 
-    let messages: MailboxMessage[] = [];
-    if (currentMailbox) {
-      const emails = await this.prisma.client.email.findMany({
-        where: { mailboxId: currentMailbox.id },
-        orderBy: { createdAt: 'desc' },
-        include: { recipients: true },
-      });
+  @ApiOperation({ summary: 'Archive mail' })
+  @Patch('mail/:id/archive')
+  async archive(
+    @Param('id') id: string,
+    @Query('email') email: string,
+    @Query('sig') sig: string,
+  ) {
+    this.verifySignature(email, sig);
+    return this.webMailService.moveToFolder(id, email, MailboxType.ARCHIVE);
+  }
 
-      messages = emails.map((email) => ({
-        id: email.id,
-        subject: email.subject ?? 'No Subject',
-        text: email.bodyText ?? '',
-        html: email.bodyHtml ?? '',
-        date: email.date.toLocaleString(),
-        from:
-          email.recipients.find((r) => r.role === 'FROM')?.address || 'Unknown',
-        to: email.recipients
-          .filter((r) => r.role === 'TO')
-          .map((r) => r.address)
-          .join(', '),
-      }));
-    }
-
-    // Prepare sidebar data
-    const mailboxes = user.mailboxes.map((m) => ({
-      name: m.name,
-      type: m.type,
-      count: m._count.emails,
-      active: m.id === currentMailbox?.id,
-      url: `${this.utils.createSignedMailboxUrl(email)}&folder=${m.name}`,
-    }));
-
-    // We need to pass the base signed URL for links to work without regenerating every time
-    // Actually, createSignedMailboxUrl returns the full URL with query param ?sig=...
-    // So we can append &folder=... safely.
-
-    return {
-      email,
-      mailboxes,
-      messages,
-      currentFolder: currentMailbox?.name || folder,
-      devMailboxUrl: this.utils.createSignedMailboxUrl(email), // Pass base URL for resets
-    };
+  @ApiOperation({ summary: 'Delete mail' })
+  @Delete('mail/:id')
+  async delete(
+    @Param('id') id: string,
+    @Query('email') email: string,
+    @Query('sig') sig: string,
+  ) {
+    this.verifySignature(email, sig);
+    return this.webMailService.deleteEmail(id, email);
   }
 }

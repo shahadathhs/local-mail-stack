@@ -1,6 +1,6 @@
 import { UserResponseDto } from '@/common/dto/user-response.dto';
 import { ENVEnum } from '@/common/enum/env.enum';
-import { JWTPayload, TokenPair } from '@/core/jwt/jwt.interface';
+import { JWTPayload, TokenPair } from '@/common/interface/auth.interface';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

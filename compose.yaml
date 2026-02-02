@@ -18,6 +18,8 @@ services:
       PORT: 3000
     ports:
       - '3000:3000'
+      - '1025:1025'
+      - '143:143'
     depends_on:
       db:
         condition: service_healthy

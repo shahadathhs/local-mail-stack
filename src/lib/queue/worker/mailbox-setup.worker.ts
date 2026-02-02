@@ -1,14 +1,10 @@
 import { QueueName } from '@/common/enum/queue-name.enum';
+import { MailboxSetupPayload } from '@/common/interface/queue.interface';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { MailboxType } from '@prisma';
 import { Job } from 'bullmq';
-
-interface MailboxSetupPayload {
-  userId: string;
-  email: string;
-}
 
 @Processor(QueueName.MAILBOX, { concurrency: 5 })
 export class MailboxSetupWorker extends WorkerHost {
