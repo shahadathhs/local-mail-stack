@@ -2,7 +2,7 @@ import { MailboxMessage } from '@/common/interface/mailbox.interface';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { AuthUtilsService } from '@/lib/utils/services/auth-utils.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EmailFlag, MailboxType } from '@prisma';
+import { EmailFlag, MailboxType, RecipientRole } from '@prisma';
 
 @Injectable()
 export class WebService {
@@ -42,9 +42,27 @@ export class WebService {
 
     let messages: MailboxMessage[] = [];
     if (currentMailbox) {
-      const where: any = { mailboxId: currentMailbox.id };
-      if (q) {
+      const where: any = {};
+
+      // Virtual "Sent" folder logic: find emails where user is the sender
+      if (currentMailbox.type === MailboxType.SENT) {
         where.OR = [
+          { mailboxId: currentMailbox.id },
+          {
+            recipients: {
+              some: {
+                address: email,
+                role: RecipientRole.FROM,
+              },
+            },
+          },
+        ];
+      } else {
+        where.mailboxId = currentMailbox.id;
+      }
+
+      if (q) {
+        const searchOR = [
           { subject: { contains: q, mode: 'insensitive' } },
           { bodyText: { contains: q, mode: 'insensitive' } },
           {
@@ -53,6 +71,13 @@ export class WebService {
             },
           },
         ];
+
+        if (where.OR) {
+          where.AND = [{ OR: where.OR }, { OR: searchOR }];
+          delete where.OR;
+        } else {
+          where.OR = searchOR;
+        }
       }
 
       const emails = await this.prisma.client.email.findMany({
@@ -61,27 +86,27 @@ export class WebService {
         include: { recipients: true, attachments: true },
       });
 
-      messages = emails.map((email) => ({
-        id: email.id,
-        subject: email.subject ?? 'No Subject',
-        text: email.bodyText ?? '',
-        html: email.bodyHtml ?? '',
-        date: email.date.toLocaleString(),
+      messages = emails.map((emailItem) => ({
+        id: emailItem.id,
+        subject: emailItem.subject ?? 'No Subject',
+        text: emailItem.bodyText ?? '',
+        html: emailItem.bodyHtml ?? '',
+        date: emailItem.date.toLocaleString(),
         from:
-          email.recipients.find((r: any) => r.role === 'FROM')?.address ||
-          'Unknown',
-        to: email.recipients
-          .filter((r: any) => r.role === 'TO')
+          emailItem.recipients.find((r: any) => r.role === RecipientRole.FROM)
+            ?.address || 'Unknown',
+        to: emailItem.recipients
+          .filter((r: any) => r.role === RecipientRole.TO)
           .map((r: any) => r.address)
           .join(', '),
-        attachments: email.attachments.map((a: any) => ({
+        attachments: emailItem.attachments.map((a: any) => ({
           id: a.id,
           filename: a.originalFilename,
           url: a.url,
           size: a.size,
           mimeType: a.mimeType,
         })),
-        isRead: email.flags.includes(EmailFlag.SEEN),
+        isRead: emailItem.flags.includes(EmailFlag.SEEN),
       }));
     }
 

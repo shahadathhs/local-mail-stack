@@ -1,19 +1,23 @@
 import { successResponse } from '@/common/utils/response.util';
 import { MailService } from '@/lib/mail/mail.service';
 import { PrismaService } from '@/lib/prisma/prisma.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EmailFlag, MailboxType } from '@prisma';
 import { SendMailDto } from '../dto/send-mail.dto';
 
 @Injectable()
 export class WebMailService {
+  private readonly logger = new Logger(WebMailService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
   ) {}
 
   async sendMail(senderEmail: string, dto: SendMailDto) {
+    this.logger.log(`Initiating sendMail from: ${senderEmail} to: ${dto.to}`);
     await this.mailService.sendMail({
+      from: senderEmail,
       to: dto.to,
       subject: dto.subject,
       text: dto.body,
