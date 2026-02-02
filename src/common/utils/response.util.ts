@@ -1,20 +1,5 @@
-export type TResponse<T = unknown> = {
-  success: boolean;
-  message: string | string[];
-  data: T;
-};
-
-export type TPaginatedResponse<T = unknown> = {
-  success: boolean;
-  message: string | string[];
-  data: T[];
-  metadata: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPage: number;
-  };
-};
+import { TPaginatedResponse, TResponse } from '../types/response.type';
+export { TPaginatedResponse, TResponse };
 
 export const successResponse = <T>(
   data: T,

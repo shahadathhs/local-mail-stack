@@ -85,6 +85,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/body-parser": "^1.19.6",
     "@types/express": "^5.0.6",
+    "@types/hbs": "^4.0.5",
     "@types/he": "^1.2.3",
     "@types/imapflow": "^1.0.189",
     "@types/jsonwebtoken": "^9.0.10",

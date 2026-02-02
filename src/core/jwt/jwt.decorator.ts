@@ -1,3 +1,5 @@
+import { UserEnum } from '@/common/enum/user.enum';
+import { JWTPayload, RequestWithUser } from '@/common/interface/auth.interface';
 import {
   applyDecorators,
   createParamDecorator,
@@ -5,10 +7,8 @@ import {
   SetMetadata,
   UseGuards,
 } from '@nestjs/common';
-import { UserEnum } from '@/common/enum/user.enum';
 import { IS_PUBLIC_KEY, ROLES_KEY } from './jwt.constants';
 import { JwtAuthGuard, RolesGuard } from './jwt.guard';
-import { JWTPayload, RequestWithUser } from './jwt.interface';
 
 // Roles metadata
 export const Roles = (...roles: UserEnum[]) => SetMetadata(ROLES_KEY, roles);

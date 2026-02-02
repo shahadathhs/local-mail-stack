@@ -9,6 +9,7 @@ import { ENVEnum } from './common/enum/env.enum';
 import { AllExceptionsFilter } from './core/filter/http-exception.filter';
 
 import { NestExpressApplication } from '@nestjs/platform-express';
+import hbs from 'hbs';
 import { join } from 'path';
 
 async function bootstrap() {
@@ -21,6 +22,11 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', '..', 'public')); // If we had public assets
   app.setBaseViewsDir(join(__dirname, '..', '..', 'views'));
   app.setViewEngine('hbs');
+
+  // Register HBS helpers
+  hbs.registerHelper('slice', (str: string, start: number, end: number) => {
+    return str ? str.slice(start, end) : '';
+  });
 
   // * enable cors
   app.enableCors({

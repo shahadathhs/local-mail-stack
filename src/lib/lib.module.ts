@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { FileModule } from './file/file.module';
+import { ImapModule } from './imap/imap.module';
 import { MailModule } from './mail/mail.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -17,6 +18,7 @@ import { UtilsModule } from './utils/utils.module';
     UtilsModule,
     QueueModule,
     SmtpModule,
+    ImapModule,
   ],
   exports: [],
   providers: [],

@@ -1,4 +1,5 @@
 import { ENVEnum } from '@/common/enum/env.enum';
+import { FileService } from '@/lib/file/services/file.service';
 import { PrismaService } from '@/lib/prisma/prisma.service';
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -18,6 +19,7 @@ export class SmtpService implements OnApplicationBootstrap {
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly fileService: FileService,
   ) {
     this.server = new SMTPServer({
       authOptional: true, // Allow local dev without strict auth
@@ -74,54 +76,49 @@ export class SmtpService implements OnApplicationBootstrap {
           : []),
       ];
 
-      // Save for each local recipient
-      for (const recipient of recipients) {
-        if (!recipient.text) continue;
-
-        // Find existing user by email
-        // Note: In a real server, we'd check if the domain matches our hosted domains
-        // For local stack, we try to match any local user
-        const address = recipient.text.replace(/.*<(.+)>$/, '$1'); // clean address
-
-        const user = await this.prisma.client.user.findUnique({
-          where: { email: address },
-          include: { mailboxes: true },
-        });
-
-        if (user) {
-          // Find INBOX
-          const inbox = user.mailboxes.find(
-            (m) => m.type === MailboxType.INBOX,
-          );
-
-          if (inbox) {
-            await this.prisma.client.email.create({
-              data: {
-                mailboxId: inbox.id,
-                subject: parsed.subject || '(No Subject)',
-                bodyText: parsed.text,
-                bodyHtml: parsed.html as string, // mailparser types can be tricky
-                messageId: parsed.messageId,
-                date: parsed.date || new Date(),
-                size: stream.byteLength, // Approximation
-                flags: [EmailFlag.RECENT],
-                recipients: {
-                  create: recipients.map((r) => ({
-                    address: r.text, // Simplified, ideally parse address object
-                    name: '',
-                    role: RecipientRole.TO, // Simplified logic
-                  })),
-                },
-              },
-            });
-
-            this.logger.log(`Email saved to INBOX for user ${user.email}`);
-            // Development Only: Log the body to see OTP easily
-            this.logger.debug(
-              `[DEBUG] Email Content for ${user.email}:\n${parsed.text}`,
+      // Process attachments once for this email
+      const attachmentIds: string[] = [];
+      if (parsed.attachments && parsed.attachments.length > 0) {
+        for (const attachment of parsed.attachments) {
+          try {
+            const savedFile = await this.fileService.saveFileFromBuffer(
+              attachment.content,
+              attachment.filename || 'unnamed-attachment',
+              attachment.contentType,
+            );
+            attachmentIds.push(savedFile.id);
+          } catch (err) {
+            this.logger.error(
+              `Failed to save attachment ${attachment.filename}`,
+              err,
             );
           }
         }
+      }
+
+      // Save for each local recipient
+      for (const recipient of recipients) {
+        if (!recipient.text) continue;
+        const address = recipient.text.replace(/.*<(.+)>$/, '$1');
+        await this.saveToUserFolder(
+          address,
+          MailboxType.INBOX,
+          parsed,
+          attachmentIds,
+          stream.byteLength,
+        );
+      }
+
+      // Save to sender's SENT folder if it's a local user
+      if (parsed.from?.text) {
+        const fromAddress = parsed.from.text.replace(/.*<(.+)>$/, '$1');
+        await this.saveToUserFolder(
+          fromAddress,
+          MailboxType.SENT,
+          parsed,
+          attachmentIds,
+          stream.byteLength,
+        );
       }
 
       callback(null);
@@ -129,5 +126,64 @@ export class SmtpService implements OnApplicationBootstrap {
       this.logger.error('Error processing incoming email', err);
       callback(new Error('Internal Server Error'));
     }
+  }
+
+  private async saveToUserFolder(
+    email: string,
+    folderType: MailboxType,
+    parsed: any,
+    attachmentIds: string[],
+    size: number,
+  ) {
+    const user = await this.prisma.client.user.findUnique({
+      where: { email },
+      include: { mailboxes: true },
+    });
+
+    if (!user) return;
+
+    const mailbox = user.mailboxes.find((m: any) => m.type === folderType);
+    if (!mailbox) return;
+
+    await this.prisma.client.email.create({
+      data: {
+        mailboxId: mailbox.id,
+        subject: parsed.subject || '(No Subject)',
+        bodyText: parsed.text,
+        bodyHtml: parsed.html as string,
+        messageId: parsed.messageId,
+        date: parsed.date || new Date(),
+        size: size,
+        flags: [EmailFlag.RECENT],
+        recipients: {
+          create: [
+            ...(parsed.to
+              ? Array.isArray(parsed.to)
+                ? parsed.to
+                : [parsed.to]
+              : []),
+            ...(parsed.cc
+              ? Array.isArray(parsed.cc)
+                ? parsed.cc
+                : [parsed.cc]
+              : []),
+            ...(parsed.bcc
+              ? Array.isArray(parsed.bcc)
+                ? parsed.bcc
+                : [parsed.bcc]
+              : []),
+          ].map((r: any) => ({
+            address: r.text,
+            name: r.name || '',
+            role: RecipientRole.TO, // Simplified
+          })),
+        },
+        attachments: {
+          connect: attachmentIds.map((id) => ({ id })),
+        },
+      },
+    });
+
+    this.logger.log(`Email saved to ${folderType} for user ${user.email}`);
   }
 }
